@@ -207,7 +207,6 @@ tab3.append(canCloseButton);
  * An action that will pop an item from the list item and patch the items into the widgetstore
  */
 const actionPopList = createAction({
-	type: 'pop-list',
 	do() {
 		listItems.pop();
 		return widgetStore.patch({ id: 'list', items: listItems });
@@ -224,7 +223,6 @@ removeButton.on('click', actionPopList);
  * the widget store
  */
 const actionPushList = createAction({
-	type: 'push-list',
 	do() {
 		const label = firstName.value;
 		listItems.push({ id: listItems.length, label: label });
@@ -239,7 +237,6 @@ const actionPushList = createAction({
 addButton.on('click', actionPushList);
 
 const actionCloseTab3 = createAction({
-	type: 'close-tab',
 	do(options) {
 		if (options && options.event && !this.state.canClose) {
 			(<any> options.event).preventDefault();
@@ -251,7 +248,6 @@ actionCloseTab3.observeState('close-tab', actionStore);
 tab3.on('close', actionCloseTab3);
 
 const actionCanCloseTab3 = createAction({
-	type: 'can-close-tab',
 	do() {
 		return actionStore.patch({ canClose: true }, { id: 'close-tab' })
 			.then(() => widgetStore.patch({ label: 'Now you can close the tab!!!' }, { id: 'tab-3-content'}));

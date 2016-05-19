@@ -7,15 +7,18 @@
 		"outDir": "_build/",
 		"removeComments": false,
 		"sourceMap": true,
-		"target": "es5"
+		"target": "es5",
+		"moduleResolution": "classic"
 	},
 	"filesGlob": [
-		"./typings/tsd.d.ts",
+		"./typings/extras.d.ts",
+		"./typings/index.d.ts",
 		"./src/**/*.ts",
 		"./tests/**/*.ts"
 	],
 	"files": [
-		"./typings/tsd.d.ts",
+		"./typings/extras.d.ts",
+		"./typings/index.d.ts",
 		"./src/app.ts",
 		"./src/index.ts",
 		"./tests/functional/all.ts",
@@ -24,13 +27,6 @@
 		"./tests/intern.ts",
 		"./tests/support/Reporter.ts",
 		"./tests/support/util.ts",
-		"./tests/typings/chai/chai.d.ts",
-		"./tests/typings/digdug/digdug.d.ts",
-		"./tests/typings/dojo2/dojo.d.ts",
-		"./tests/typings/intern/intern.d.ts",
-		"./tests/typings/leadfoot/leadfoot.d.ts",
-		"./tests/typings/node/node.d.ts",
-		"./tests/typings/tsd.d.ts",
 		"./tests/unit/all.ts"
 	]
 }

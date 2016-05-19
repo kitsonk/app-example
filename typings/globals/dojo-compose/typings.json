@@ -1,0 +1,12 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "/Users/kitsonk/github/app-example/node_modules/dojo-compose/package.json",
+    "raw": "npm:dojo-compose",
+    "main": "./dist/umd/main.js",
+    "typings": "./dist/umd/dojo-compose.d.ts",
+    "version": "2.0.0-beta.4",
+    "global": false,
+    "name": "dojo-compose"
+  }
+}
