@@ -2,6 +2,7 @@
  * An example basic application using stores/widgets/actions
  * @module dojo-app-example/app
  */
+import Promise from 'dojo-core/Promise';
 import createMemoryStore from 'dojo-widgets/util/createMemoryStore';
 import createButton from 'dojo-widgets/createButton';
 import createDijit from 'dojo-widgets/createDijit';
@@ -14,7 +15,8 @@ import createTextInput from 'dojo-widgets/createTextInput';
 import createWidget from 'dojo-widgets/createWidget';
 import projector from 'dojo-widgets/projector';
 import { Child } from 'dojo-widgets/mixins/createParentMixin';
-import createAction from 'dojo-actions/createAction';
+import { ValueChangeEvent } from 'dojo-widgets/mixins/createFormFieldMixin';
+import createAction, { Action, ActionState } from 'dojo-actions/createAction';
 
 import * as DateTextBox from 'dijit/form/DateTextBox';
 
@@ -29,10 +31,21 @@ const listItems = [
 	{ id: 5, label: 'norf' }
 ];
 
+interface WidgetStateRecord {
+	[prop: string]: any;
+	id: string;
+	classes?: string[];
+	label?: string;
+	value?: any;
+	closeable?: boolean;
+	name?: string;
+	items?: any[];
+}
+
 /**
  * A memory store which handles the widget states
  */
-const widgetStore = createMemoryStore({
+const widgetStore = createMemoryStore<WidgetStateRecord>({
 	data: [
 		{ id: 'header', label: 'Dojo 2 Example Application'},
 		{ id: 'tabbed-panel', classes: [ 'pad-1em' ] },
@@ -48,14 +61,19 @@ const widgetStore = createMemoryStore({
 		{ id: 'tab-2-content', label: 'You can close me!' },
 		{ id: 'tab-3', classes: [ 'pad-1em' ], label: 'Tab 3', closeable: true },
 		{ id: 'tab-3-content', label: 'You can try to close me, but...'},
-		{ id: 'can-close', label: 'Can Close' }
+		{ id: 'can-close', label: 'Can Close' },
+		{ id: 'tab-4', classes: [ 'pad-1em' ], label: 'Tab 4' },
+		{ id: 'text-usd', name: 'text-usd', value: 1 },
+		{ id: 'text-gbp', name: 'text-gbp' },
+		{ id: 'text-eur', name: 'text-eur' }
 	]
 });
 
 const actionStore = createMemoryStore({
 	data: [
 		{ id: 'close-tab', canClose: false, enabled: true },
-		{ id: 'can-close-tab', enabled: true }
+		{ id: 'can-close-tab', enabled: true },
+		{ id: 'update-amount', amount: 0, usd2gbp: 0.683854, usd2eur: 0.89075, gbp2eur: 1.29691 }
 	]
 });
 
@@ -254,6 +272,99 @@ const actionCanCloseTab3 = createAction({
 	}
 });
 canCloseButton.on('click', actionCanCloseTab3);
+
+/** TAB 4 */
+
+const tab4 = createPanel({
+	id: 'tab-4',
+	stateFrom: widgetStore
+});
+
+tabbedPanel.append(tab4);
+
+interface UpdateAmountState extends ActionState {
+	amount: number;
+	usd2gbp: number;
+	usd2eur: number;
+	gbp2eur: number;
+}
+
+const textUSD = createTextInput({
+	stateFrom: widgetStore,
+	id: 'text-usd'
+});
+
+const textGBP = createTextInput({
+	stateFrom: widgetStore,
+	id: 'text-gbp'
+});
+
+const textEUR = createTextInput({
+	stateFrom: widgetStore,
+	id: 'text-eur'
+});
+
+const actionUpdateAmount = createAction({
+	stateFrom: actionStore,
+	id: 'update-amount',
+	do({ event }: { event: ValueChangeEvent<number> }) {
+		const action: Action<any, any, UpdateAmountState> = this;
+		const { value, target } = event;
+		if (value === String(Number(value))) {
+			event.preventDefault();
+			let usd: number | string;
+			let gbp: number | string;
+			let eur: number | string;
+			if (target === <any> textUSD) {
+				usd = value;
+				gbp = Math.round(Number(value) * action.state.usd2gbp * 1000) / 1000;
+				eur = Math.round(Number(value) * action.state.usd2eur * 1000) / 1000;
+			}
+			else if (target === <any> textGBP) {
+				usd = Math.round(Number(value) / action.state.usd2gbp * 1000) / 1000;
+				gbp = value;
+				eur = Math.round(Number(value) * action.state.gbp2eur * 1000) / 1000;
+			}
+			else {
+				usd = Math.round(Number(value) / action.state.usd2eur * 1000) / 1000;
+				gbp = Math.round(Number(value) / action.state.gbp2eur * 1000) / 1000;
+				eur = value;
+			}
+			console.log(usd, gbp, eur);
+			return Promise.all([
+				widgetStore.patch({ value: usd }, { id: 'text-usd' }),
+				widgetStore.patch({ value: gbp }, { id: 'text-gbp' }),
+				widgetStore.patch({ value: eur }, { id: 'text-eur' })
+			]);
+		}
+	}
+});
+
+textUSD.on('valuechange', actionUpdateAmount);
+textGBP.on('valuechange', actionUpdateAmount);
+textEUR.on('valuechange', actionUpdateAmount);
+
+tab4.append(createWidget({
+	tagName: 'app-label',
+	state: {
+		label: 'USD'
+	}
+}));
+tab4.append(textUSD);
+tab4.append(createWidget({
+	tagName: 'app-label',
+	state: {
+		label: 'GBP'
+	}
+}));
+tab4.append(textGBP);
+tab4.append(createWidget({
+	tagName: 'app-label',
+	state: {
+		label: 'EUR'
+	}
+}));
+tab4.append(textEUR);
 
 /**
  * Attach the VDOM

@@ -5,6 +5,17 @@ declare module 'dojo-widgets/util/lang' {
 	export type Position = number | 'first' | 'last' | 'before' | 'after';
 	export function insertInList<T>(list: List<T>, item: T, position: Position, reference?: T): List<T>;
 	export function insertInArray<T>(array: T[], item: T, position: Position, reference?: T): T[];
+	/**
+	 * Internal function to convert a state value to a string
+	 * @param value The value to be converted
+	 */
+	export function valueToString(value: any): string;
+	/**
+	 * Internal function to convert a string to the likely more complex value stored in
+	 * state
+	 * @param str The string to convert to a state value
+	 */
+	export function stringToValue(str: string): any;
 
 }
 declare module 'dojo-widgets/mixins/createRenderable' {
@@ -251,12 +262,50 @@ declare module 'dojo-widgets/createWidget' {
 	export default createWidget;
 
 }
+declare module 'dojo-widgets/util/createCancelableEvent' {
+	export interface CancelableEvent<T extends string, U> {
+	    /**
+	     * The type of the event
+	     * TODO: Mark as readonly in TS2
+	     */
+	    type: T;
+	    /**
+	     * The target for the event
+	     * TODO: Mark as readonly in TS2
+	     */
+	    target: U;
+	    /**
+	     * Can the event be canceled?
+	     * TODO: Mark as readonly in TS2
+	     */
+	    cancelable: boolean;
+	    /**
+	     * Was the event canceled?
+	     * TODO: Mark as readonly in TS2
+	     */
+	    defaultPrevented: boolean;
+	    /**
+	     * Cancel the event
+	     * TODO: Mark as readonly in TS2
+	     */
+	    preventDefault(): void;
+	} function createCancelableEvent<T extends string, U>(options: {
+	    type: T;
+	    target: U;
+	}): CancelableEvent<T, U>;
+	export default createCancelableEvent;
+
+}
 declare module 'dojo-widgets/mixins/createFormFieldMixin' {
 	import { ComposeFactory } from 'dojo-compose/compose';
+	import { EventedListener, TargettedEventObject } from 'dojo-compose/mixins/createEvented';
 	import { Stateful, State, StatefulOptions } from 'dojo-compose/mixins/createStateful';
+	import { Handle } from 'dojo-core/interfaces';
 	import { CachedRenderMixin, CachedRenderState } from 'dojo-widgets/mixins/createCachedRenderMixin';
+	import { CancelableEvent } from 'dojo-widgets/util/createCancelableEvent';
 	export interface FormFieldMixinOptions<V, S extends FormFieldMixinState<V>> extends StatefulOptions<S> {
 	    type?: string;
+	    value?: V;
 	}
 	export interface FormFieldMixinState<V> extends State, CachedRenderState {
 	    /**
@@ -272,7 +321,12 @@ declare module 'dojo-widgets/mixins/createFormFieldMixin' {
 	     */
 	    disabled?: boolean;
 	}
-	export interface FormField {
+	export interface ValueChangeEvent<V> extends CancelableEvent<'valuechange', FormFieldMixin<V, FormFieldMixinState<V>>> {
+	    type: 'valuechange';
+	    oldValue: string;
+	    value: string;
+	}
+	export interface FormField<V> {
 	    /**
 	     * The HTML type for this widget
 	     */
@@ -281,8 +335,10 @@ declare module 'dojo-widgets/mixins/createFormFieldMixin' {
 	     * The string value of this form widget, which is read from the widget state
 	     */
 	    value?: string;
+	    on?(type: 'valuechange', listener: EventedListener<ValueChangeEvent<V>>): Handle;
+	    on?(type: string, listener: EventedListener<TargettedEventObject>): Handle;
 	}
-	export type FormFieldMixin<V, S extends FormFieldMixinState<V>> = FormField & Stateful<S> & CachedRenderMixin<S>;
+	export type FormFieldMixin<V, S extends FormFieldMixinState<V>> = FormField<V> & Stateful<S> & CachedRenderMixin<S>;
 	export interface FormMixinFactory extends ComposeFactory<FormFieldMixin<any, FormFieldMixinState<any>>, FormFieldMixinOptions<any, FormFieldMixinState<any>>> {
 	    <V>(options?: FormFieldMixinOptions<V, FormFieldMixinState<V>>): FormFieldMixin<V, FormFieldMixinState<V>>;
 	} const createFormMixin: FormMixinFactory;
@@ -493,25 +549,14 @@ declare module 'dojo-widgets/mixins/createCloseableMixin' {
 	import { Stateful, State, StatefulOptions } from 'dojo-compose/mixins/createStateful';
 	import { Handle } from 'dojo-core/interfaces';
 	import Promise from 'dojo-core/Promise';
+	import { CancelableEvent } from 'dojo-widgets/util/createCancelableEvent';
 	export interface CloseableState extends State {
 	    /**
 	     * Determines if the widget is closeable or not
 	     */
 	    closeable?: boolean;
 	}
-	export interface CloseEvent extends TargettedEventObject {
-	    /**
-	     * The event target
-	     */
-	    target: CloseableMixin<CloseableState>;
-	    /**
-	     * The event type
-	     */
-	    type: 'close';
-	    /**
-	     * Stop the default behaviour of the event
-	     */
-	    preventDefault(): void;
+	export interface CloseEvent extends CancelableEvent<'close', CloseableMixin<CloseableState>> {
 	}
 	export interface Closeable {
 	    /**
