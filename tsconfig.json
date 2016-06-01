@@ -11,13 +11,13 @@
 		"moduleResolution": "classic"
 	},
 	"filesGlob": [
-		"./typings/extras.d.ts",
+		"./node_modules/dojo-typings/1.11/modules.d.ts",
 		"./typings/index.d.ts",
 		"./src/**/*.ts",
 		"./tests/**/*.ts"
 	],
 	"files": [
-		"./typings/extras.d.ts",
+		"./node_modules/dojo-typings/1.11/modules.d.ts",
 		"./typings/index.d.ts",
 		"./src/app.ts",
 		"./src/index.ts",
