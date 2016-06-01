@@ -1,0 +1,12 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "/Users/kitsonk/github/app-example/node_modules/dojo-widgets/package.json",
+    "raw": "npm:dojo-widgets",
+    "main": "index.js",
+    "typings": "./dist/umd/dojo-widgets.d.ts",
+    "version": "2.0.0-pre",
+    "global": false,
+    "name": "dojo-widgets"
+  }
+}
