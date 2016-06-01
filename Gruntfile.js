@@ -1,14 +1,9 @@
 module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-stylus');
-	grunt.loadNpmTasks('grunt-exec');
 
 	var staticSrcFiles = [ 'src/**/*.{html,png,ts}' ];
 
 	require('grunt-dojo2').initConfig(grunt, {
-		exec: {
-			build_dojo1: 'ln -sF node_modules/dojo-util node_modules/util && node_modules/dojo-util/buildScripts/build.sh --profile app-example.profile.js'
-		},
-
 		copy: {
 			staticSrcFiles: {
 				expand: true,
@@ -42,13 +37,13 @@ module.exports = function (grunt) {
 	});
 
 	grunt.registerTask('dev', [
+		'typings',
 		'tslint',
 		'ts:dev',
 		'stylus:dev',
 		'copy:staticTestFiles',
 		'copy:staticSrcFiles',
 		'replace:addIstanbulIgnore',
-		'updateTsconfig',
-		'exec:build_dojo1'
+		'updateTsconfig'
 	]);
 };
