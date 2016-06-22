@@ -10,8 +10,8 @@
 		{ name: 'maquette', location: 'node_modules/maquette/dist' },
 		{ name: 'rxjs', location: 'node_modules/@reactivex/rxjs/dist/amd' },
 		{ name: 'dojo1', location: '_build/dojo1' },
-		{ name: 'dojo', location: '_build/dojo1/dojo' },
-		{ name: 'dijit', location: '_build/dojo1/dijit' }
+		{ name: 'dojo', location: 'node_modules/dojo' },
+		{ name: 'dijit', location: 'node_modules/dijit' }
 	],
 	map: {
 		'*': {
@@ -22,4 +22,4 @@
 });
 
 /* Requiring in the main module */
-require([ 'dojo1/app-example', 'src/app' ], function () {});
+require([ 'src/app' ], function () {});

@@ -14,7 +14,7 @@ import createTabbedPanel from 'dojo-widgets/createTabbedPanel';
 import createTextInput from 'dojo-widgets/createTextInput';
 import createWidget from 'dojo-widgets/createWidget';
 import projector from 'dojo-widgets/projector';
-import { Child } from 'dojo-widgets/mixins/createParentMixin';
+import { Child } from 'dojo-widgets/mixins/interfaces';
 import { ValueChangeEvent } from 'dojo-widgets/mixins/createFormFieldMixin';
 import createAction, { Action, ActionState } from 'dojo-actions/createAction';
 

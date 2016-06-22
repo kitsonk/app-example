@@ -7,6 +7,7 @@
 	},
 	"globalDependencies": {
 		"dojo-actions": "npm:dojo-actions",
+		"dojo-app": "npm:dojo-app",
 		"dojo-compose": "npm:dojo-compose",
 		"dojo-core": "npm:dojo-core",
 		"dojo-loader": "npm:dojo-loader",

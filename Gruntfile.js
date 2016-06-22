@@ -49,7 +49,6 @@ module.exports = function (grunt) {
 		'copy:staticTestFiles',
 		'copy:staticSrcFiles',
 		'replace:addIstanbulIgnore',
-		'updateTsconfig',
-		'exec:build_dojo1'
+		'updateTsconfig'
 	]);
 };
